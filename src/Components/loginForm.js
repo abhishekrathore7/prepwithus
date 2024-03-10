@@ -1,19 +1,41 @@
 import * as React from 'react';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import {signInWithEmailAndPassword} from 'firebase/auth'
+import { auth } from '../firebaseConfig';
 
-function Login(){ //function Name must start with Captial letters
+
+
+function Login({
+    setAuthState,
+    setUser
+}){ //function Name must start with Captial letters
+
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+
+    const handleLogin = () => {
+        if(email !== null && password !== null){
+            signInWithEmailAndPassword(auth, email, password)
+            .then(() => {
+                setUser(email)
+                setAuthState('home')
+            })
+            .catch((err) => alert(err));
+        }
+    }
     return(
         <div className='bg-white px-10 py-20 rounded-3xl border-2 border-gray-200'>
         <h2 className='text-5xl font-semibold font-serif'>Sign in to your account</h2>
         <p className='font-medium text-lg text-gray-500 mt-4'>Please enter your details</p>
             <div className='mt-8'>
                 <label className='text-lg font-medium'>Email address</label>
-                <input className='w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent' placeholder='Enter your email' />
+                <input value={email} onChange={(e) => setEmail(e.target.value)}
+                className='w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent' placeholder='Enter your email' />
             </div>
             <div>
                 <label className='text-lg font-medium'>Password</label>
-                <input className='w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent' placeholder='Enter your password' 
-                    type='password'
+                <input value={password} onChange={(e) => setPassword(e.target.value)}
+                className='w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent' placeholder='Enter your password' 
+                type='password'
                 />
             </div>
             <div className='mt-8 flex justify-between items-center'>
@@ -24,9 +46,11 @@ function Login(){ //function Name must start with Captial letters
                 <button className='font-medium text-base text-violet-500'>Forgot Password?</button>
             </div>
             <div className='mt-8 flex flex-col gap-y-4'>
-                <button className='active:scale-[.98] 
+                <button onClick={handleLogin} 
+                className='active:scale-[.98] 
                 active:duration-75 transition-all hover:scale-[1.01] ease-in-out bg-violet-500 text-white py-3 text-lg font-bold rounded-xl'>Sign in</button>
-                <button className='flex py-3 border-2 border-gray-200 rounded-xl items-center justify-center gap-2 
+                <button 
+                className='flex py-3 border-2 border-gray-200 rounded-xl items-center justify-center gap-2 
                 active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01] ease-in-out'>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5.26644 9.76453C6.19903 6.93863 8.85469 4.90909 12.0002 4.90909C13.6912 4.90909 15.2184 5.50909 16.4184 6.49091L19.9093 3C17.7821 1.14545 15.0548 0 12.0002 0C7.27031 0 3.19799 2.6983 1.24023 6.65002L5.26644 9.76453Z" fill="#EA4335"/>
@@ -39,7 +63,8 @@ function Login(){ //function Name must start with Captial letters
             </div>
             <div className='mt-8 flex justify-center items-center'>
                 <p className='font-medium text-base'>Don't have an account?</p>
-                <button className='text-violet-500 text-base font-medium ml-2'>Sign up</button>
+                <button onClick={() => setAuthState('register')}
+                className='text-violet-500 text-base font-medium ml-2'>Sign up</button>
             </div>
         </div>
     );
